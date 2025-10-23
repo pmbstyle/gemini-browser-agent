@@ -11,12 +11,16 @@ const maxStepsInput = document.getElementById('maxSteps');
 const logEntriesEl = document.getElementById('logEntries');
 const resultOutputEl = document.getElementById('resultOutput');
 const resultOutputContainer = document.getElementById('resultOutputContainer');
+const serverOutputEl = document.getElementById('serverOutput');
+const serverOutputContainer = document.getElementById('serverOutputContainer');
 const modelActionsEl = document.getElementById('modelActions');
 const modelActionsContainer = document.getElementById('modelActionsContainer');
 const permissionContainer = document.getElementById('permissionContainer');
 const permissionContent = document.getElementById('permissionContent');
 const allowBtn = document.getElementById('allowBtn');
 const rejectBtn = document.getElementById('rejectBtn');
+const clearLogBtn = document.getElementById('clearLogBtn');
+const copyResultBtn = document.getElementById('copyResultBtn');
 
 // Initialize when DOM is ready
 function initialize() {
@@ -47,6 +51,16 @@ function initialize() {
     } else {
       console.error('agentToggleBtn not found!');
     }
+
+    if (clearLogBtn) {
+      clearLogBtn.addEventListener('click', clearActivityLog);
+    }
+
+    if (copyResultBtn) {
+      copyResultBtn.addEventListener('click', copyResultToClipboard);
+    }
+
+    setCopyButtonEnabled(false);
 
   } catch (error) {
     console.error('Error in initialize:', error);
@@ -166,9 +180,16 @@ async function disconnect() {
     updateUI();
     
     // Clear and hide output containers
-    serverOutputEl.innerHTML = '';
-    resultOutputEl.innerHTML = '';
-    resultOutputContainer.classList.add('hidden');
+    if (serverOutputEl) {
+      serverOutputEl.innerHTML = '';
+    }
+    if (resultOutputEl) {
+      resultOutputEl.innerHTML = '';
+    }
+    if (resultOutputContainer) {
+      resultOutputContainer.classList.add('hidden');
+    }
+    setCopyButtonEnabled(false);
   } catch (error) {
     log(`Disconnect error: ${error.message}`, 'error');
   }
@@ -197,6 +218,7 @@ async function startAgent() {
     if (resultOutputContainer) {
       resultOutputContainer.classList.add('hidden');
     }
+    setCopyButtonEnabled(false);
     
     // Set current tab to active tab before starting agent
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -322,6 +344,7 @@ function resetToInitialState() {
   if (resultOutputContainer) {
     resultOutputContainer.classList.add('hidden');
   }
+  setCopyButtonEnabled(false);
   
   // Reset status to connected (ready for next task)
   updateStatus('connected', 'Connected - Ready for next task');
@@ -329,6 +352,51 @@ function resetToInitialState() {
   
   // Add ready message
   log('System reset and ready for next task', 'info');
+}
+
+function clearActivityLog() {
+  if (!logEntriesEl) {
+    return;
+  }
+
+  logEntriesEl.innerHTML = '';
+
+  const logContainer = logEntriesEl.parentElement;
+  if (logContainer) {
+    logContainer.scrollTop = 0;
+  }
+}
+
+function setCopyButtonEnabled(enabled) {
+  if (copyResultBtn) {
+    copyResultBtn.disabled = !enabled;
+  }
+}
+
+async function copyResultToClipboard() {
+  if (!resultOutputEl) {
+    log('Result area not found for copy', 'error');
+    return;
+  }
+
+  const text = resultOutputEl.innerText.trim();
+  if (!text) {
+    log('No result available to copy yet', 'warning');
+    return;
+  }
+
+  if (!navigator.clipboard || !navigator.clipboard.writeText) {
+    log('Clipboard API unavailable in this browser context', 'error');
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    log('Result copied to clipboard', 'success');
+  } catch (error) {
+    console.error('Failed to copy result:', error);
+    log('Failed to copy result to clipboard', 'error');
+  }
 }
 
 // Log messages
@@ -381,6 +449,7 @@ function showResult(result) {
   entry.textContent = result;
   resultOutputEl.appendChild(entry);
   console.log('Result entry added to DOM');
+  setCopyButtonEnabled(true);
 }
 
 function addModelAction(action) {

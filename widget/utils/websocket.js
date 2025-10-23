@@ -99,9 +99,10 @@ export async function connect() {
 /**
  * Send message to Python server
  * @param {object} message - The message to send
+ * @param {number} timeout - Timeout in ms before rejecting
  * @returns {Promise} Promise that resolves with the response
  */
-export async function send(message) {
+export async function send(message, timeout = 30000) {
   if (!ws || ws.readyState !== WebSocket.OPEN) {
     throw new Error('WebSocket not connected');
   }
@@ -110,13 +111,21 @@ export async function send(message) {
   const messageWithId = { id, ...message };
   
   ws.send(JSON.stringify(messageWithId));
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const listener = (response) => {
-      if (response.data.id === id) {
+      const { data } = response || {};
+      if (data && data.id === id) {
+        clearTimeout(timeoutId);
         chrome.runtime.onMessage.removeListener(listener);
-        resolve(response.data);
+        resolve(data);
       }
     };
+
+    const timeoutId = setTimeout(() => {
+      chrome.runtime.onMessage.removeListener(listener);
+      reject(new Error(`Response timeout for message ${id}`));
+    }, timeout);
+
     chrome.runtime.onMessage.addListener(listener);
   });
 }

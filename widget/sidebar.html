@@ -217,13 +217,51 @@
       overflow-y: auto;
       margin-top: 20px;
     }
-    
-    .log-container h4 {
-      margin: 0 0 12px 0;
+
+    .log-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .log-header h4 {
+      margin: 0;
       color: #3498db;
       font-size: 14px;
     }
-    
+
+    #clearLogBtn {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      z-index: 1;
+      background: rgba(44, 62, 80, 0.95);
+      border-color: rgba(236, 240, 241, 0.4);
+    }
+
+    .icon-button {
+      background: rgba(236, 240, 241, 0.1);
+      color: #ecf0f1;
+      border: 1px solid rgba(236, 240, 241, 0.3);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .icon-button:hover {
+      background: rgba(236, 240, 241, 0.25);
+      color: #ffffff;
+    }
+
+    .icon-button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
     .log-entry {
       margin-bottom: 4px;
       padding: 2px 0;
@@ -275,10 +313,14 @@
     <button id="connectToggleBtn" class="btn btn-primary" onclick="console.log('Button clicked directly!')">Connect</button>
     <button id="agentToggleBtn" class="btn btn-secondary" disabled>Start AI Agent</button>
   </div>
-  
-  <div class="log-container">
-    <h4>Activity Log</h4>
-    <div id="logEntries"></div>
+  <div style="position: relative;">
+    <button id="clearLogBtn" class="icon-button" type="button">Clear</button>
+    <div class="log-container activity-log-container">
+      <div class="log-header">
+        <h4>Activity Log</h4>
+      </div>
+      <div id="logEntries"></div>
+    </div>
   </div>
   
   <div id="permissionContainer" class="log-container hidden">
@@ -292,7 +334,10 @@
   
   
   <div id="resultOutputContainer" class="log-container hidden">
-    <h4>Result</h4>
+    <div class="log-header">
+      <h4>Result</h4>
+      <button id="copyResultBtn" class="icon-button" type="button">Copy</button>
+    </div>
     <div id="resultOutput"></div>
   </div>
   
