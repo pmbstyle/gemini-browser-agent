@@ -11,7 +11,6 @@ import { ensureTab, runInCurrentTab, updateTab, getAllTabs, setCurrentTab, getCu
  * @returns {Promise<object>} Click result with debug info
  */
 export async function click({ x, y }) {
-  ensureTab();
   try {
     return runInCurrentTab(({ x, y }) => {
       // Add visual debug indicator - red dot at click coordinates
@@ -134,7 +133,6 @@ export async function click({ x, y }) {
  * @returns {Promise<object>} Type result with debug info
  */
 export async function type({ text, x, y }) {
-  ensureTab();
   try {
     return runInCurrentTab(({ text, x, y }) => {
       // Add visual debug indicator - blue dot at type coordinates
@@ -263,7 +261,6 @@ export async function type({ text, x, y }) {
  * @returns {Promise<boolean>} Success status
  */
 export async function press({ key }) {
-  ensureTab();
   return runInCurrentTab(({ key }) => {
     const activeEl = document.activeElement;
     if (activeEl) {
@@ -344,7 +341,6 @@ export async function press({ key }) {
  * @returns {Promise<any>} Evaluation result
  */
 export async function evaluate({ expression }) {
-  ensureTab();
   return runInCurrentTab(({ expression }) => {
     try {
       return eval(expression);
@@ -361,10 +357,10 @@ export async function evaluate({ expression }) {
  * @returns {Promise<object>} Navigation result
  */
 export async function goto({ url }) {
-  ensureTab();
+  const tabId = await ensureTab();
   try {
-    console.log(`[bridge] Navigating to: ${url} in tab: ${getCurrentTab()}`);
-    const result = await updateTab(getCurrentTab(), { url });
+    console.log(`[bridge] Navigating to: ${url} in tab: ${tabId}`);
+    const result = await updateTab(tabId, { url });
     console.log(`[bridge] Navigation result:`, result);
     return result;
   } catch (error) {
@@ -378,7 +374,6 @@ export async function goto({ url }) {
  * @returns {Promise<boolean>} Success status
  */
 export async function go_back() {
-  ensureTab();
   return runInCurrentTab(() => {
     window.history.back();
     return true;
@@ -390,7 +385,6 @@ export async function go_back() {
  * @returns {Promise<boolean>} Success status
  */
 export async function go_forward() {
-  ensureTab();
   return runInCurrentTab(() => {
     window.history.forward();
     return true;
@@ -405,7 +399,6 @@ export async function go_forward() {
  * @returns {Promise<boolean>} Success status
  */
 export async function hover({ x, y }) {
-  ensureTab();
   return runInCurrentTab(({ x, y }) => {
     const el = document.elementFromPoint(x, y);
     if (el) {
@@ -421,10 +414,10 @@ export async function hover({ x, y }) {
  * @returns {Promise<object>} Screenshot data URL
  */
 export async function screenshot() {
-  ensureTab();
+  const tabId = await ensureTab();
   try {
     // Try to activate the tab first to ensure we can take a screenshot
-    await updateTab(getCurrentTab(), { active: true });
+    await updateTab(tabId, { active: true });
     const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'jpeg', quality: 50 });
     
     // Check if the screenshot is too large (> 500KB)
@@ -463,8 +456,8 @@ export async function screenshot() {
  * @returns {Promise<object>} Current URL info
  */
 export async function current_url() {
-  ensureTab();
-  const tab = await chrome.tabs.get(getCurrentTab());
+  const tabId = await ensureTab();
+  const tab = await chrome.tabs.get(tabId);
   return { url: tab.url };
 }
 
@@ -488,7 +481,7 @@ export async function list_tabs() {
  * @returns {Promise<object>} Success status
  */
 export async function set_tab({ tabId }) {
-  setCurrentTab(tabId);
+  await setCurrentTab(tabId);
   return { ok: true };
 }
 
@@ -499,7 +492,6 @@ export async function set_tab({ tabId }) {
  * @returns {Promise<object>} Scroll result
  */
 export async function scroll_document({ direction }) {
-  ensureTab();
   return runInCurrentTab(({ direction }) => {
     if (direction === 'down') {
       window.scrollBy(0, 800);
@@ -523,8 +515,7 @@ export async function scroll_document({ direction }) {
  * @returns {Promise<object>} Viewport dimensions
  */
 export async function get_viewport() {
-  ensureTab();
-  const tabId = getCurrentTab();
+  const tabId = await ensureTab();
   console.log(`[bridge] Getting viewport dimensions for tab: ${tabId}`);
 
   // Get actual viewport from page

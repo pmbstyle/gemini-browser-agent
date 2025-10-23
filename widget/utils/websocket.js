@@ -23,7 +23,7 @@ export async function connect() {
       // Auto-set current tab when connected
       const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
       if (tabs.length > 0) {
-        setCurrentTab(tabs[0].id);
+        await setCurrentTab(tabs[0].id);
         console.log(`[bridge] Auto-set current tab: ${tabs[0].id}`);
       }
       

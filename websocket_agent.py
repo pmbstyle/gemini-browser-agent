@@ -436,7 +436,28 @@ async def start_agent_loop(ws, goal: str, max_steps: int = 10):
             contents=contents,
             config=config,
         )
-        cand = resp.candidates[0]
+
+        candidates = getattr(resp, "candidates", None) or []
+        if not candidates:
+            feedback = getattr(resp, "prompt_feedback", None)
+            block_reason = getattr(feedback, "block_reason", None)
+            reason_text = f" (block reason: {block_reason})" if block_reason else ""
+            msg = f"⚠️ Gemini response missing candidates{reason_text}."
+            print(msg)
+            await ws.send(json.dumps({"type": "server_output", "text": msg}))
+            await ws.send(json.dumps({"type": "agent_result", "result": "Agent stopped: Gemini returned no candidates."}))
+            agent_task = None
+            break
+
+        cand = candidates[0]
+        if not getattr(cand, "content", None) or not getattr(cand.content, "parts", None):
+            msg = "⚠️ Gemini candidate missing content; stopping agent."
+            print(msg)
+            await ws.send(json.dumps({"type": "server_output", "text": msg}))
+            await ws.send(json.dumps({"type": "agent_result", "result": "Agent stopped: Gemini returned empty content."}))
+            agent_task = None
+            break
+
         contents.append(cand.content)
 
         # If model didn't return function_call — output text and exit

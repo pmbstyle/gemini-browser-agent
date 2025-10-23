@@ -1,33 +1,36 @@
 // Tab management utilities for Gemini Browser Agent
 // This module handles tab operations and script execution
 
-let currentTabId = null;
-
 /**
  * Set the current tab ID
+ * Uses chrome.storage.session for MV3 service worker persistence
  * @param {number} tabId - The tab ID to set as current
  */
-export function setCurrentTab(tabId) {
-  currentTabId = tabId;
+export async function setCurrentTab(tabId) {
+  await chrome.storage.session.set({ currentTabId: tabId });
   console.log(`[bridge] Set current tab to: ${tabId}`);
 }
 
 /**
  * Get the current tab ID
- * @returns {number|null} The current tab ID or null
+ * Uses chrome.storage.session for MV3 service worker persistence
+ * @returns {Promise<number|null>} The current tab ID or null
  */
-export function getCurrentTab() {
-  return currentTabId;
+export async function getCurrentTab() {
+  const result = await chrome.storage.session.get('currentTabId');
+  return result.currentTabId || null;
 }
 
 /**
  * Ensure we have a current tab set
  * @throws {Error} If no current tab is set
  */
-export function ensureTab() {
-  if (!currentTabId) {
+export async function ensureTab() {
+  const tabId = await getCurrentTab();
+  if (!tabId) {
     throw new Error('No current tab set');
   }
+  return tabId;
 }
 
 /**
@@ -60,8 +63,8 @@ export async function runInPage(tabId, func, args = {}) {
  * @returns {Promise} Promise that resolves with the function result
  */
 export async function runInCurrentTab(func, args = {}) {
-  ensureTab();
-  return runInPage(currentTabId, func, args);
+  const tabId = await ensureTab();
+  return runInPage(tabId, func, args);
 }
 
 /**

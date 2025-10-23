@@ -47,8 +47,11 @@ export function setupMessageListener() {
       }
     } else if (request.type === 'set_tab') {
       console.log(`[bridge] Setting current tab to: ${request.tabId}`);
-      setCurrentTab(request.tabId);
-      sendResponse({ success: true });
+      (async () => {
+        await setCurrentTab(request.tabId);
+        sendResponse({ success: true });
+      })();
+      return true; // Keep channel open for async response
     } else if (request.type === 'permission_response') {
       // This is handled by the permission request system
       sendResponse({ success: true });

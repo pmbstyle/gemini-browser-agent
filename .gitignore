@@ -5,3 +5,4 @@
 pyvenv.cfg
 .env
 *.png
+AGENTS.md
