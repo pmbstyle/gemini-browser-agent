@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Gemini Browser Agent Bridge",
+  "version": "1.0",
+  "description": "Bridge between AI agent and browser automation",
+  "permissions": ["scripting", "activeTab", "tabs", "storage", "sidePanel"],
+  "host_permissions": ["<all_urls>", "ws://127.0.0.1:*", "ws://localhost:*"],
+  "action": { 
+    "default_title": "Gemini Browser Agent"
+  },
+  "side_panel": {
+    "default_path": "sidebar.html"
+  },
+  "background": { 
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}

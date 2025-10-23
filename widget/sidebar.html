@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 400px;
+      height: 100vh-40px;
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      overflow-y: auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      color: #2c3e50;
+      font-weight: 600;
+    }
+    
+    .status {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .status-connected {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status-disconnected {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .status-connecting {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .status-attached {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    .form-group textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .form-group input[type="number"] {
+      padding: 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+    
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: #02772f;
+      color: white;
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+      background: #025f25;
+      transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover:not(:disabled) {
+      background: #545b62;
+      transform: translateY(-1px);
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .btn-danger:hover:not(:disabled) {
+      background: #c82333;
+      transform: translateY(-1px);
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .agent-status {
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .agent-status h3 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      color: #2c3e50;
+    }
+    
+    .agent-goal {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #495057;
+      border-left: 4px solid #007bff;
+      margin-bottom: 12px;
+    }
+    
+    .agent-actions {
+      font-size: 13px;
+      color: #6c757d;
+    }
+    
+    .agent-actions strong {
+      color: #495057;
+    }
+
+    .flex-row {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .flex-row.inner-row {
+      width: auto;
+      margin-bottom: 0;
+    }
+
+    .log-container {
+      background: #2c3e50;
+      color: #ecf0f1;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .log-container h4 {
+      margin: 0 0 12px 0;
+      color: #3498db;
+      font-size: 14px;
+    }
+    
+    .log-entry {
+      margin-bottom: 4px;
+      padding: 2px 0;
+    }
+    
+    .log-entry.info {
+      color: #3498db;
+    }
+    
+    .log-entry.success {
+      color: #2ecc71;
+    }
+    
+    .log-entry.error {
+      color: #e74c3c;
+    }
+    
+    .log-entry.warning {
+      color: #f39c12;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🤖 Gemini Browser Agent</h1>
+  </div>
+  
+  <div id="status" class="status status-disconnected">
+    Disconnected
+  </div>
+  
+  <div class="form-group">
+    <div class="flex-row">
+      <label for="agentGoal">AI Agent Goal:</label>
+      <div class="flex-row inner-row">
+        <label for="maxSteps">Max Number of Steps:</label>
+        <input type="number" id="maxSteps" value="10" min="1" max="50" />
+      </div>
+    </div>
+    
+    <textarea id="agentGoal" placeholder="Enter what you want the AI agent to do...&#10;Example: Open DuckDuckGo, search for 'pink ponies' and return the first result"></textarea>
+  </div>
+  
+  <div class="button-group">
+    <button id="connectToggleBtn" class="btn btn-primary" onclick="console.log('Button clicked directly!')">Connect</button>
+    <button id="agentToggleBtn" class="btn btn-secondary" disabled>Start AI Agent</button>
+  </div>
+  
+  <div class="log-container">
+    <h4>Activity Log</h4>
+    <div id="logEntries"></div>
+  </div>
+  
+  <div id="permissionContainer" class="log-container hidden">
+    <h4>Permission Request</h4>
+    <div id="permissionContent"></div>
+    <div class="button-group">
+      <button id="allowBtn" class="btn btn-primary">Allow</button>
+      <button id="rejectBtn" class="btn btn-danger">Reject</button>
+    </div>
+  </div>
+  
+  
+  <div id="resultOutputContainer" class="log-container hidden">
+    <h4>Result</h4>
+    <div id="resultOutput"></div>
+  </div>
+  
+  <script>
+    console.log('HTML loaded, about to load sidebar.js');
+  </script>
+  <script src="sidebar.js"></script>
+</body>
+</html>

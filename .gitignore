@@ -1,0 +1,7 @@
+/.claude
+/.serena
+/venv
+/claudedocs
+pyvenv.cfg
+.env
+*.png
