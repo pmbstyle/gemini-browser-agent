@@ -1,12 +1,15 @@
 # Gemini Browser Agent
 
 ## Overview
-Gemini Browser Agent is a local automation companion that bridges a Chrome extension with Google’s Gemini Computer Use API. It observes the active tab, exchanges screenshots and events with the model, and performs actions directly in your own browser—no hosted sandbox or virtual machine required.
+Gemini Browser Agent is an automation agent that bridges a Chrome extension with Google’s Gemini Computer Use API. It observes the active tab, exchanges screenshots and events with the model, and performs actions directly in your own browser, no sandbox or virtual machine required.
 
-## Why Use It
-- **Runs in your browser:** Automation happens in the tab you already have open, making debugging and verification straightforward.
-- **No remote sandbox:** Keep data local and avoid the latency or limits of third-party environments.
-- **Rapid experiments:** Extend the agent with JavaScript modules or Python utilities without additional infrastructure.
+**Runs in your actual browser.**
+
+Automation happens in the tab you already have open. The agent can use your browser sessions for better results.
+<p align="center">
+<a href="https://www.youtube.com/watch?v=0K437iL5I_U"><img src="https://github.com/user-attachments/assets/27649062-bcf0-49b5-a682-fe63323baecf" /></a>
+</p>
+
 
 ## Setup
 1. Install Python 3.10+ and Chrome (or Chromium-based) browser.
@@ -31,5 +34,3 @@ Gemini Browser Agent is a local automation companion that bridges a Chrome exten
 3. Enable **Developer mode**, choose **Load unpacked**, and select the `widget/` directory from this project.
 4. Open the sidebar, click **Connect** to link the extension with the Python agent, and provide your automation goal.
 5. Press **Start AI Agent** to let Gemini plan, execute actions, and stream log updates directly in your browser.
-
-When finished, click **Stop Agent** or disconnect, then close the terminal running the bridge. The agent is ready for iterative prompts and extensions from your local machine.***
