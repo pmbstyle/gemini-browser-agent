@@ -1,11 +1,11 @@
 # Gemini Browser Agent
 
 ## Overview
-Gemini Browser Agent is an automation agent that bridges a Chrome extension with Google’s Gemini Computer Use API. It observes the active tab, exchanges screenshots and events with the model, and performs actions directly in your own browser, no sandbox or virtual machine required.
+Gemini Browser Agent is an automation agent that bridges a Chrome extension with [Google’s Gemini Computer Use API](https://ai.google.dev/gemini-api/docs/computer-use). It observes the active tab, exchanges screenshots and events with the model, and performs actions directly in your own browser, no sandbox or virtual machine required.
 
 **Runs in your actual browser.**
 
-Automation happens in the tab you already have open. The agent can use your browser sessions for better results.
+Automation happens in the tab you already have open. The agent can utilize your browser sessions to achieve better results.
 <p align="center">
 <a href="https://www.youtube.com/watch?v=0K437iL5I_U"><img src="https://github.com/user-attachments/assets/27649062-bcf0-49b5-a682-fe63323baecf" /></a>
 </p>
