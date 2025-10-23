@@ -33,3 +33,5 @@ Gemini Browser Agent is an automation agent that bridges a Chrome extension with
 3. Enable **Developer mode**, choose **Load unpacked**, and select the `widget/` directory from this project.
 4. Open the sidebar, click **Connect** to link the extension with the Python agent, and provide your automation goal.
 5. Press **Start AI Agent** to let Gemini plan, execute actions, and stream log updates directly in your browser.
+
+For sandboxed automation, use this repo [https://github.com/pmbstyle/gemini-computer-use](https://github.com/pmbstyle/gemini-computer-use)
