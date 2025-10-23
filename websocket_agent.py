@@ -135,8 +135,9 @@ def verify_dimensions_match(screenshot_data: Dict, viewport_data: Dict) -> bool:
 
     return True
 
-# Global WebSocket connection
+# Global WebSocket connection and agent task
 ws_connection = None
+agent_task = None
 PENDING_RESPONSES = {}
 
 async def execute_action(ws, action_name: str, args: Dict[str, Any]) -> Any:
@@ -310,11 +311,9 @@ async def build_function_responses_websocket(ws, results: List[tuple[str, Dict[s
 
 async def handle_websocket_connection(ws):
     """Handle WebSocket connection from Chrome extension"""
-    global ws_connection
+    global ws_connection, agent_task
     ws_connection = ws
     print(f"Extension connected from {ws.remote_address}")
-    
-    agent_task = None
     
     try:
         async for message in ws:
@@ -375,6 +374,7 @@ async def handle_websocket_connection(ws):
         # Cancel agent task if still running
         if agent_task and not agent_task.done():
             agent_task.cancel()
+        agent_task = None
         ws_connection = None
 
 async def start_agent_loop(ws, goal: str, max_steps: int = 10):
